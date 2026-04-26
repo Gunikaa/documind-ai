@@ -10,10 +10,6 @@ st.set_page_config(
     layout="wide"
 )
 
-st.write("App starting...")
-st.write(f"faiss_index exists: {os.path.exists('faiss_index')}")
-st.write(f"Files: {os.listdir('.')}")
-
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_groq import ChatGroq
