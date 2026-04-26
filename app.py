@@ -1,11 +1,15 @@
+import os
 import streamlit as st
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_groq import ChatGroq
 from dotenv import load_dotenv
-import os
 
 load_dotenv()
+
+st.write("App starting...")
+st.write(f"faiss_index exists: {os.path.exists('faiss_index')}")
+st.write(f"Files in directory: {os.listdir('.')}")
 
 st.set_page_config(
     page_title="DocuMind AI",
@@ -122,7 +126,6 @@ st.markdown("""
 vectorstore = load_vectorstore()
 llm = load_llm()
 
-# Stats row
 col1, col2, col3, col4 = st.columns(4)
 with col1:
     st.markdown('<div class="stat-card"><h3>22+</h3><p>Indian Languages</p></div>', unsafe_allow_html=True)
@@ -135,7 +138,6 @@ with col4:
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# Sidebar
 with st.sidebar:
     st.markdown("### DocuMind AI")
     st.markdown("---")
@@ -185,7 +187,6 @@ with st.sidebar:
         st.session_state.translations = {}
         st.rerun()
 
-# Chat
 st.markdown("### Ask your document anything")
 
 if "messages" not in st.session_state:
@@ -197,12 +198,9 @@ if "translations" not in st.session_state:
 if not st.session_state.messages:
     st.info("Try: 'What is RAG?' | 'RAG kya hai?' | 'ডেটা সায়েন্স কি?' | Or click 'Run Language Test' in sidebar!")
 
-# Display messages with verify button
 for i, msg in enumerate(st.session_state.messages):
     with st.chat_message(msg["role"]):
         st.write(msg["content"])
-
-        # Show verify button only for assistant messages
         if msg["role"] == "assistant":
             col_btn, col_empty = st.columns([1, 3])
             with col_btn:
@@ -212,17 +210,13 @@ for i, msg in enumerate(st.session_state.messages):
                         translation = translate_to_english(msg["content"], llm)
                         st.session_state.translations[i] = translation
                         st.rerun()
-
-            # Show translation if available
             if i in st.session_state.translations:
                 st.markdown(f'<div class="verify-box">📋 <strong>English Translation:</strong><br>{st.session_state.translations[i]}</div>', unsafe_allow_html=True)
 
-# New question input
 if question := st.chat_input("Koi bhi bhasha mein poochho..."):
     st.session_state.messages.append({"role": "user", "content": question})
     with st.chat_message("user"):
         st.write(question)
-
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
             answer, sources = get_answer(question, vectorstore, llm)
@@ -230,7 +224,6 @@ if question := st.chat_input("Koi bhi bhasha mein poochho..."):
         with st.expander("View Sources"):
             for i, doc in enumerate(sources):
                 st.caption(f"Source {i+1} — Page {doc.metadata.get('page', '?')}: {doc.page_content[:250]}...")
-
     st.session_state.messages.append({"role": "assistant", "content": answer})
     st.rerun()
 
