@@ -1,21 +1,22 @@
 import os
-import streamlit as st
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.vectorstores import FAISS
-from langchain_groq import ChatGroq
 from dotenv import load_dotenv
-
 load_dotenv()
 
-st.write("App starting...")
-st.write(f"faiss_index exists: {os.path.exists('faiss_index')}")
-st.write(f"Files in directory: {os.listdir('.')}")
+import streamlit as st
 
 st.set_page_config(
     page_title="DocuMind AI",
     page_icon="📚",
     layout="wide"
 )
+
+st.write("App starting...")
+st.write(f"faiss_index exists: {os.path.exists('faiss_index')}")
+st.write(f"Files: {os.listdir('.')}")
+
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_groq import ChatGroq
 
 st.markdown("""
 <style>
@@ -106,7 +107,7 @@ Answer:"""
     return response.content, docs
 
 def translate_to_english(text, llm):
-    prompt = f"""Translate the following text to English. 
+    prompt = f"""Translate the following text to English.
 Only return the translation, nothing else.
 
 Text: {text}
